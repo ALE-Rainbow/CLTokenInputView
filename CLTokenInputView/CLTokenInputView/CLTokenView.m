@@ -45,6 +45,7 @@ static NSString *const UNSELECTED_LABEL_NO_COMMA_FORMAT = @"%@";
         }
         self.label.textColor = tintColor;
         self.label.backgroundColor = [UIColor clearColor];
+        self.label.textAlignment = NSTextAlignmentCenter;
         [self addSubview:self.label];
 
         self.selectedBackgroundView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -57,6 +58,7 @@ static NSString *const UNSELECTED_LABEL_NO_COMMA_FORMAT = @"%@";
         self.selectedLabel.font = self.label.font;
         self.selectedLabel.textColor = [UIColor whiteColor];
         self.selectedLabel.backgroundColor = [UIColor clearColor];
+        self.selectedLabel.textAlignment = NSTextAlignmentCenter;
         [self addSubview:self.selectedLabel];
         self.selectedLabel.hidden = YES;
 
