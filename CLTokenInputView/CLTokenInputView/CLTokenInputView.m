@@ -227,8 +227,8 @@ static CGFloat const FIELD_MARGIN_X = 4.0; // Note: Same as CLTokenView.PADDING_
         self.fieldLabel.frame = fieldLabelRect;
 
         if (isRTLLanguage) {
-            curX = PADDING_LEFT;
             firstLineRightBoundary = CGRectGetMinX(fieldLabelRect) - FIELD_MARGIN_X;
+            curX = firstLineRightBoundary;
         }
         else {
             curX = CGRectGetMaxX(fieldLabelRect) + FIELD_MARGIN_X;
@@ -248,7 +248,7 @@ static CGFloat const FIELD_MARGIN_X = 4.0; // Note: Same as CLTokenView.PADDING_
         self.accessoryView.frame = accessoryRect;
 
         if (isRTLLanguage) {
-            curX = PADDING_LEFT + CGRectGetWidth(accessoryRect);
+            curX = firstLineRightBoundary;
         }
         else {
             firstLineRightBoundary = CGRectGetMinX(accessoryRect) - HSPACE;
@@ -257,30 +257,49 @@ static CGFloat const FIELD_MARGIN_X = 4.0; // Note: Same as CLTokenView.PADDING_
 
     // Position token views
     CGRect tokenRect = CGRectNull;
+    CGFloat tokenLeftBoundary = curX;
     for (UIView *tokenView in self.tokenViews) {
         tokenRect = tokenView.frame;
 
         CGFloat tokenBoundary = isOnFirstLine ? firstLineRightBoundary : rightBoundary;
-        if (curX + CGRectGetWidth(tokenRect) > tokenBoundary) {
-            // Need a new line
-            curX = PADDING_LEFT;
-            curY += STANDARD_ROW_HEIGHT+VSPACE;
-            totalHeight += STANDARD_ROW_HEIGHT;
-            isOnFirstLine = NO;
+        if (isRTLLanguage) {
+            curX = curX - CGRectGetWidth(tokenRect) - HSPACE;
+            if (curX < PADDING_LEFT) {
+                // Need a new line
+                curX = tokenBoundary - CGRectGetWidth(tokenRect) - HSPACE;
+                curY += STANDARD_ROW_HEIGHT+VSPACE;
+                totalHeight += STANDARD_ROW_HEIGHT;
+                isOnFirstLine = NO;
+            }
+            tokenLeftBoundary = CGRectGetMinX(tokenRect) - HSPACE;
         }
-
+        else {
+            if (curX + CGRectGetWidth(tokenRect) > tokenBoundary) {
+                // Need a new line
+                curX = PADDING_LEFT;
+                curY += STANDARD_ROW_HEIGHT+VSPACE;
+                totalHeight += STANDARD_ROW_HEIGHT;
+                isOnFirstLine = NO;
+            }
+        }
         tokenRect.origin.x = curX;
         // Center our tokenView vertically within STANDARD_ROW_HEIGHT
         tokenRect.origin.y = curY + ((STANDARD_ROW_HEIGHT-CGRectGetHeight(tokenRect))/2.0);
         tokenView.frame = tokenRect;
 
-        curX = CGRectGetMaxX(tokenRect) + HSPACE;
+        if (!isRTLLanguage) {
+            curX = CGRectGetMaxX(tokenRect) + HSPACE;
+        }
     }
 
     // Always indent textfield by a little bit
     curX += TEXT_FIELD_HSPACE;
     CGFloat textBoundary = isOnFirstLine ? firstLineRightBoundary : rightBoundary;
     CGFloat availableWidthForTextField = textBoundary - curX;
+    if (isRTLLanguage) {
+        availableWidthForTextField = tokenLeftBoundary - PADDING_LEFT - TEXT_FIELD_HSPACE;
+        curX = PADDING_LEFT + TEXT_FIELD_HSPACE;
+    }
     if (availableWidthForTextField < MINIMUM_TEXTFIELD_WIDTH) {
         isOnFirstLine = NO;
         // If in the future we add more UI elements below the tokens,
