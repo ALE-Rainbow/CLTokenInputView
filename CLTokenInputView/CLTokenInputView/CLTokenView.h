@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (assign, nonatomic) BOOL selected;
 @property (assign, nonatomic) BOOL hideUnselectedComma;
 
-- (id)initWithToken:(CLToken *)token font:(nullable UIFont *)font;
+- (id)initWithToken:(CLToken *)token font:(nullable UIFont *)font backgroundColorMode:(BOOL) backgroundColorMode;
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated;
 

@@ -26,37 +26,51 @@ static NSString *const UNSELECTED_LABEL_NO_COMMA_FORMAT = @"%@";
 @property (strong, nonatomic) UILabel *selectedLabel;
 
 @property (copy, nonatomic) NSString *displayText;
+@property (nonatomic) BOOL backgroundColorMode;
 
 @end
 
 @implementation CLTokenView
 
-- (id)initWithToken:(CLToken *)token font:(nullable UIFont *)font
+- (id)initWithToken:(CLToken *)token font:(nullable UIFont *)font backgroundColorMode:(BOOL) backgroundColorMode
 {
     self = [super initWithFrame:CGRectZero];
     if (self) {
+        self.backgroundColorMode = backgroundColorMode;
+        
         UIColor *tintColor = [UIColor colorWithRed:0.0823 green:0.4941 blue:0.9843 alpha:1.0];
-        if ([self respondsToSelector:@selector(tintColor)]) {
+        if ([self respondsToSelector:@selector(tintColor)])
             tintColor = self.tintColor;
-        }
+        if (token.color)
+            tintColor = token.color;
+        
         self.label = [[UILabel alloc] initWithFrame:CGRectMake(PADDING_X, PADDING_Y, 0, 0)];
         if (font) {
             self.label.font = font;
         }
-        self.label.textColor = tintColor;
-        self.label.backgroundColor = [UIColor clearColor];
+        
+        if (backgroundColorMode) {
+            self.label.textColor = [UIColor whiteColor];
+            self.label.backgroundColor = tintColor;
+            self.label.layer.cornerRadius = 3.0;
+            self.label.layer.masksToBounds = YES;
+        } else {
+            self.label.textColor = tintColor;
+            self.label.backgroundColor = [UIColor clearColor];
+        }
+        
         self.label.textAlignment = NSTextAlignmentCenter;
         [self addSubview:self.label];
 
         self.selectedBackgroundView = [[UIView alloc] initWithFrame:CGRectZero];
-        self.selectedBackgroundView.backgroundColor = tintColor;
+        self.selectedBackgroundView.backgroundColor = backgroundColorMode ? [UIColor whiteColor] : tintColor;
         self.selectedBackgroundView.layer.cornerRadius = 3.0;
         [self addSubview:self.selectedBackgroundView];
         self.selectedBackgroundView.hidden = YES;
 
         self.selectedLabel = [[UILabel alloc] initWithFrame:CGRectMake(PADDING_X, PADDING_Y, 0, 0)];
         self.selectedLabel.font = self.label.font;
-        self.selectedLabel.textColor = [UIColor whiteColor];
+        self.selectedLabel.textColor = backgroundColorMode ? tintColor : [UIColor whiteColor];
         self.selectedLabel.backgroundColor = [UIColor clearColor];
         self.selectedLabel.textAlignment = NSTextAlignmentCenter;
         [self addSubview:self.selectedLabel];
@@ -114,9 +128,13 @@ static NSString *const UNSELECTED_LABEL_NO_COMMA_FORMAT = @"%@";
 
 - (void)setHideUnselectedComma:(BOOL)hideUnselectedComma
 {
+    if (self.backgroundColorMode)
+        hideUnselectedComma = YES;
+    
     if (_hideUnselectedComma == hideUnselectedComma) {
         return;
     }
+    
     _hideUnselectedComma = hideUnselectedComma;
     [self updateLabelAttributedText];
 }
@@ -209,11 +227,11 @@ static NSString *const UNSELECTED_LABEL_NO_COMMA_FORMAT = @"%@";
     CGRect bounds = self.bounds;
 
     self.backgroundView.frame = bounds;
-    self.selectedBackgroundView.frame = bounds;
 
     CGRect labelFrame = CGRectInset(bounds, PADDING_X, PADDING_Y);
-    self.selectedLabel.frame = labelFrame;
     labelFrame.size.width += PADDING_X*2.0;
+    self.selectedLabel.frame = labelFrame;
+    self.selectedBackgroundView.frame = labelFrame;
     self.label.frame = labelFrame;
 }
 

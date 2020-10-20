@@ -20,6 +20,17 @@
     return self;
 }
 
+- (id)initWithDisplayText:(NSString *)displayText context:(NSObject *)context color:(UIColor *) color
+{
+    self = [super init];
+    if (self) {
+        self.displayText = displayText;
+        self.context = context;
+        self.color = color;
+    }
+    return self;
+}
+
 - (BOOL)isEqual:(id)object
 {
     if (self == object) {

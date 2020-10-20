@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIColor.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,9 +21,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (copy, nonatomic) NSString *displayText;
 /** Used for storing anything that would be useful later on */
 @property (strong, nonatomic, nullable) NSObject *context;
+/** Color of the token (either background or text) */
+@property (strong, nonatomic) UIColor *color;
 
 
 - (id)initWithDisplayText:(NSString *)displayText context:(nullable NSObject *)context;
+
+- (id)initWithDisplayText:(NSString *)displayText context:(nullable NSObject *)context color:(nullable UIColor *) color;
 
 @end
 

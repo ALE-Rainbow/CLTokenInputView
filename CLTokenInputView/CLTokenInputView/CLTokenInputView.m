@@ -11,7 +11,7 @@
 #import "CLBackspaceDetectingTextField.h"
 #import "CLTokenView.h"
 
-static CGFloat const HSPACE = 0.0;
+static CGFloat const HSPACE = 5.0;
 static CGFloat const TEXT_FIELD_HSPACE = 4.0; // Note: Same as CLTokenView.PADDING_X
 static CGFloat const VSPACE = 4.0;
 static CGFloat const MINIMUM_TEXTFIELD_WIDTH = 56.0;
@@ -114,7 +114,7 @@ static CGFloat const FIELD_MARGIN_X = 4.0; // Note: Same as CLTokenView.PADDING_
     }
 
     [self.tokens addObject:token];
-    CLTokenView *tokenView = [[CLTokenView alloc] initWithToken:token font:self.textField.font];
+    CLTokenView *tokenView = [[CLTokenView alloc] initWithToken:token font:self.textField.font backgroundColorMode:self.backgroundColorMode];
     if ([self respondsToSelector:@selector(tintColor)]) {
         tokenView.tintColor = self.tintColor;
     }
